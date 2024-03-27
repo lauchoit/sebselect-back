@@ -20,10 +20,6 @@ export class ContractingEntitiesController {
 
   @Post('/selected')
   findOneByPartyName(@Body() parentNames: string[]) {
-    return { parentNames };
-    // return this.contractingEntitiesService.findOneBayPartyName(
-    //   name,
-    //   parentName,
-    // );
+    return this.contractingEntitiesService.findOneBayPartyName(parentNames);
   }
 }

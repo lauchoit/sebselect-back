@@ -25,7 +25,11 @@ export class ContractingEntitiesService {
     }
   }
 
-  async findOneBayPartyName(name: string, parentName: string | null) {
+  async findOneBayPartyName(orderedNames: string[]) {
+    const parentNameNewOrder = orderedNames.reverse();
+    const parentName = parentNameNewOrder[0];
+    const name = parentNameNewOrder[1];
+
     const result = await this.contractingEntitiesModel
       .aggregate([
         {
@@ -59,15 +63,9 @@ export class ContractingEntitiesService {
     return {
       count: result.length,
       data: result,
+      parentName,
+      name,
+      orderedNames,
     };
-    // return this.contractingEntitiesModel
-    //   .find({
-    //     parentLocatedParty: {
-    //       $elemMatch: {
-    //         name: new RegExp(name, 'i'), // Busca el término insensible a mayúsculas y minúsculas
-    //       },
-    //     },
-    //   })
-    //   .exec();
   }
 }
