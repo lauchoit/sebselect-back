@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ContractingEntitiesService } from './contracting-entities.service';
 import { ContractingEntitiesDto } from './dto';
 
@@ -18,15 +18,12 @@ export class ContractingEntitiesController {
     return this.contractingEntitiesService.create(createContractingEntityDto);
   }
 
-  @Get('/selected')
-  findOneByPartyName(
-    @Query('name') name: string,
-    @Query('parentName') parentName: string,
-  ) {
-    // return { name, parentName };
-    return this.contractingEntitiesService.findOneBayPartyName(
-      name,
-      parentName,
-    );
+  @Post('/selected')
+  findOneByPartyName(@Body() parentNames: string[]) {
+    return { parentNames };
+    // return this.contractingEntitiesService.findOneBayPartyName(
+    //   name,
+    //   parentName,
+    // );
   }
 }

@@ -27,18 +27,20 @@ export class SelectService {
       for (const party of contractReverse) {
         iteration++;
         totalItems++;
-        this.loggeer.warn(`Part: ${party.name} - Iteration: ${iteration}`);
-        const select = await this.selectModel
-          .findOne({ title: party.name })
-          .exec();
         if (iteration == 0) {
-          if (select && !select.patternId) {
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: null })
+            .exec();
+          if (select) {
             lastRegister[iteration] = select;
             continue;
           }
           patternId = null;
         }
         if (iteration == 1) {
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: lastRegister[0]._id })
+            .exec();
           if (select?.patternId.toString() === lastRegister[0]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
@@ -46,6 +48,9 @@ export class SelectService {
           patternId = lastRegister[0]._id;
         }
         if (iteration == 2) {
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: lastRegister[1]._id })
+            .exec();
           if (select?.patternId.toString() === lastRegister[1]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
@@ -53,12 +58,9 @@ export class SelectService {
           patternId = lastRegister[1]._id;
         }
         if (iteration == 3) {
-          if (party.name === 'Ayuntamientos') {
-            this.loggeer.log(`Iterando: ${party.name}`);
-            this.loggeer.error(
-              `${select?.patternId.toString()} == ${lastRegister[2]._id.toString()}`,
-            );
-          }
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: lastRegister[2]._id })
+            .exec();
           if (select?.patternId.toString() === lastRegister[2]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
@@ -67,6 +69,9 @@ export class SelectService {
           patternId = lastRegister[2]._id;
         }
         if (iteration == 4) {
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: lastRegister[3]._id })
+            .exec();
           if (select?.patternId.toString() === lastRegister[3]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
@@ -74,6 +79,9 @@ export class SelectService {
           patternId = lastRegister[3]._id;
         }
         if (iteration == 5) {
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: lastRegister[4]._id })
+            .exec();
           if (select?.patternId.toString() === lastRegister[4]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
@@ -81,6 +89,9 @@ export class SelectService {
           patternId = lastRegister[4]._id;
         }
         if (iteration == 6) {
+          const select = await this.selectModel
+            .findOne({ title: party.name, patternId: lastRegister[5]._id })
+            .exec();
           if (select?.patternId.toString() === lastRegister[5]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
@@ -104,12 +115,21 @@ export class SelectService {
   }
 
   async getOptionsSelect(selected: string) {
+    const parentNames: string[] = [];
     if (!selected) {
       selected = null;
     }
     const items = await this.selectModel.find({ patternId: selected }).exec();
+    let parent = await this.selectModel.findOne({ _id: selected }).exec();
+    parentNames.push(parent?.title);
+
+    while (parent?.patternId) {
+      parent = await this.selectModel.findOne({ _id: parent.patternId }).exec();
+      parentNames.push(parent.title);
+    }
     return {
       count: items.length,
+      parentNames,
       data: items,
     };
   }
