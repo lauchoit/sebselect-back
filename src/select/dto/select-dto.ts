@@ -6,5 +6,5 @@ export class SelectDto {
 
   @IsString()
   @IsOptional()
-  patternWord: string;
+  patternId: string;
 }

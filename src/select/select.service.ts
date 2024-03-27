@@ -21,25 +21,75 @@ export class SelectService {
       totalIteration++;
       this.loggeer.debug(`Iteracion: ${totalIteration}`);
       let iteration = -1;
-      let patterWord = null;
+      let patternId = null;
       const contractReverse = contract.parentLocatedParty.reverse();
+      const lastRegister: any[] = [];
       for (const party of contractReverse) {
+        this.loggeer.warn(`Part: ${party.name}`);
         iteration++;
         totalItems++;
         const select = await this.selectModel
           .findOne({ title: party.name })
           .exec();
-        if (select) {
-          continue;
+        // if (select) {
+        // console.log(contractReverse[iteration]);
+        // continue;
+        // }
+        if (iteration == 0) {
+          if (select && !select.patternId) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = null;
         }
-        if (iteration !== 0) {
-          const pattern = contractReverse[iteration - 1];
-          patterWord = pattern.name;
+        if (iteration == 1) {
+          if (select && contractReverse[0].name == lastRegister[0].title) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = lastRegister[0]._id;
         }
+        if (iteration == 2) {
+          if (select && contractReverse[1].name == lastRegister[1].title) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = lastRegister[1]._id;
+        }
+        if (iteration == 3) {
+          if (select && contractReverse[2].name == lastRegister[2].title) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = lastRegister[2]._id;
+        }
+        if (iteration == 4) {
+          if (select && contractReverse[3].name == lastRegister[3].title) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = lastRegister[3]._id;
+        }
+        if (iteration == 5) {
+          if (select && contractReverse[4].name == lastRegister[4].title) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = lastRegister[4]._id;
+        }
+        if (iteration == 6) {
+          if (select && contractReverse[5].name == lastRegister[5].title) {
+            lastRegister[iteration] = select;
+            continue;
+          }
+          patternId = lastRegister[5]._id;
+        }
+        // continue;
         totalRegistered++;
-        await this.registerSelect({
+        // this.loggeer.error(`Pattern: ${patternId}`);
+        lastRegister[iteration] = await this.registerSelect({
           title: party.name,
-          patternWord: patterWord,
+          patternId: patternId ? patternId.toString() : null,
         });
       }
     }
@@ -56,7 +106,7 @@ export class SelectService {
     if (!selected) {
       selected = null;
     }
-    const items = await this.selectModel.find({ patternWord: selected }).exec();
+    const items = await this.selectModel.find({ patternId: selected }).exec();
     return {
       count: items.length,
       data: items,
