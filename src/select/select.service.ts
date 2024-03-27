@@ -12,7 +12,7 @@ export class SelectService {
     @InjectModel(Select.name) private selectModel: Model<SelectDto>,
   ) {}
 
-  async registerAllSelect(name: string, contracts: ContractingEntitiesDto[]) {
+  async registerAllSelect(contracts: ContractingEntitiesDto[]) {
     let totalItems = 0;
     let totalRegistered = 0;
     let totalIteration = 0;
@@ -25,16 +25,12 @@ export class SelectService {
       const contractReverse = contract.parentLocatedParty.reverse();
       const lastRegister: any[] = [];
       for (const party of contractReverse) {
-        this.loggeer.warn(`Part: ${party.name}`);
         iteration++;
         totalItems++;
+        this.loggeer.warn(`Part: ${party.name} - Iteration: ${iteration}`);
         const select = await this.selectModel
           .findOne({ title: party.name })
           .exec();
-        // if (select) {
-        // console.log(contractReverse[iteration]);
-        // continue;
-        // }
         if (iteration == 0) {
           if (select && !select.patternId) {
             lastRegister[iteration] = select;
@@ -43,50 +39,55 @@ export class SelectService {
           patternId = null;
         }
         if (iteration == 1) {
-          if (select && contractReverse[0].name == lastRegister[0].title) {
+          if (select?.patternId.toString() === lastRegister[0]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
           }
           patternId = lastRegister[0]._id;
         }
         if (iteration == 2) {
-          if (select && contractReverse[1].name == lastRegister[1].title) {
+          if (select?.patternId.toString() === lastRegister[1]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
           }
           patternId = lastRegister[1]._id;
         }
         if (iteration == 3) {
-          if (select && contractReverse[2].name == lastRegister[2].title) {
+          if (party.name === 'Ayuntamientos') {
+            this.loggeer.log(`Iterando: ${party.name}`);
+            this.loggeer.error(
+              `${select?.patternId.toString()} == ${lastRegister[2]._id.toString()}`,
+            );
+          }
+          if (select?.patternId.toString() === lastRegister[2]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
           }
+          // this.loggeer.log(`No existe ${party.name}`);
           patternId = lastRegister[2]._id;
         }
         if (iteration == 4) {
-          if (select && contractReverse[3].name == lastRegister[3].title) {
+          if (select?.patternId.toString() === lastRegister[3]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
           }
           patternId = lastRegister[3]._id;
         }
         if (iteration == 5) {
-          if (select && contractReverse[4].name == lastRegister[4].title) {
+          if (select?.patternId.toString() === lastRegister[4]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
           }
           patternId = lastRegister[4]._id;
         }
         if (iteration == 6) {
-          if (select && contractReverse[5].name == lastRegister[5].title) {
+          if (select?.patternId.toString() === lastRegister[5]._id.toString()) {
             lastRegister[iteration] = select;
             continue;
           }
           patternId = lastRegister[5]._id;
         }
-        // continue;
         totalRegistered++;
-        // this.loggeer.error(`Pattern: ${patternId}`);
         lastRegister[iteration] = await this.registerSelect({
           title: party.name,
           patternId: patternId ? patternId.toString() : null,

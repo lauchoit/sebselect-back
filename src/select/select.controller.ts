@@ -10,10 +10,10 @@ export class SelectController {
   ) {}
 
   @Get('register-all')
-  async registerAllSelect(@Query('name') name: string) {
+  async registerAllSelect() {
     const contracts = await this.contractingEntitiesService.findAll();
     console.log({ numeroDeRegistros: contracts.length });
-    this.selectService.registerAllSelect(name, contracts);
+    this.selectService.registerAllSelect(contracts);
     return 'Se envio a registrar todos los contratos';
   }
 
