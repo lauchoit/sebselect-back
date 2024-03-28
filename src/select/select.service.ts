@@ -119,9 +119,13 @@ export class SelectService {
     if (!selected) {
       selected = null;
     }
-    const items = await this.selectModel.find({ patternId: selected }).exec();
+    let items = await this.selectModel.find({ patternId: selected }).exec();
     let parent = await this.selectModel.findOne({ _id: selected }).exec();
     parentNames.push(parent?.title);
+
+    items = items.filter(item => item.title);
+
+
 
     while (parent?.patternId) {
       parent = await this.selectModel.findOne({ _id: parent.patternId }).exec();
