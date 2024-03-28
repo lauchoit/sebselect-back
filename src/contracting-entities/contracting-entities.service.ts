@@ -25,9 +25,12 @@ export class ContractingEntitiesService {
     }
   }
 
-  async findOneBayPartyName(orderedNames: string[]) {
+  async findOneBayPartyName(orderedNames: any[]) {
+    const parents = orderedNames.map(order => {
+      return order.name;
+    })
     const result = await this.contractingEntitiesModel.find({
-      parentLocatedParty: { $all: orderedNames },
+      "parentLocatedParty.name": { $all: parents },
     });
 
     return {
