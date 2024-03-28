@@ -127,9 +127,13 @@ export class SelectService {
       parent = await this.selectModel.findOne({ _id: parent.patternId }).exec();
       parentNames.push(parent.title);
     }
+
+    const orderNamesObject = parentNames.map((name) => {
+      return { name };
+    });
     return {
       count: items.length,
-      parentNames,
+      parentNames: orderNamesObject,
       data: items,
     };
   }

@@ -26,46 +26,14 @@ export class ContractingEntitiesService {
   }
 
   async findOneBayPartyName(orderedNames: string[]) {
-    const parentNameNewOrder = orderedNames.reverse();
-    const parentName = parentNameNewOrder[0];
-    const name = parentNameNewOrder[1];
-
-    const result = await this.contractingEntitiesModel
-      .aggregate([
-        {
-          $match: {
-            'parentLocatedParty.name': parentName, // Filtrar por el nombre deseado
-          },
-        },
-        {
-          $addFields: {
-            'parentLocatedParty.previous': {
-              $arrayElemAt: [
-                '$parentLocatedParty',
-                {
-                  $subtract: [
-                    { $indexOfArray: ['$parentLocatedParty.name', parentName] },
-                    1,
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        {
-          $match: {
-            'parentLocatedParty.previous.name': name, // Filtrar por el nombre del elemento anterior
-          },
-        },
-      ])
-      .exec();
+    const result = await this.contractingEntitiesModel.find({
+      parentLocatedParty: { $all: orderedNames },
+    });
 
     return {
       count: result.length,
-      data: result,
-      parentName,
-      name,
       orderedNames,
+      data: result,
     };
   }
 }
